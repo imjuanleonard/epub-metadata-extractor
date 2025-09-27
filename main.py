@@ -1,5 +1,9 @@
+from tika import parser
+
 def main():
-    print("Hello from epub-metadata-extractor!")
+    parsed = parser.from_file('./dataset/pg74.epub')
+    print(parsed["metadata"])
+    print(parsed["content"])
 
 
 if __name__ == "__main__":
