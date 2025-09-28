@@ -1,22 +1,8 @@
 import csv
 from tika import parser
-from nextory.model import BookMetadata
-
-# Set the metadata and create the first few jsons
-# Title
-# Author
-# Publishing Year
-# Epub ID
-
-# Use The Ollama Model To Generate 
-#● genre (str): The main genre of the book (e.g., science fiction, crime, fantasy, romance)
-#● themes (list[str]): A list of the main themes being featured in the book.
-#● setting (dict[str, str]): A dictionary of the time and place that the story takes place in.
-#● cultural_context (str): A brief description of the relevant cultural context invoked in the story.
-#● narrative_tone (str): A brief description of the attitude or mood conveyed by the storytelling.
-#● author_writing_style (str): A brief description of the writing style and techniques employed by the author.
-#● characters_and_relationships (list[dict[str, str]]): A list of dictionaries outlining the central characters and their most important relationships using the fields name and relationship.
-
+from nextory.model import BookMetadata, ContentInformation
+import ollama
+import outlines
 
 
 def read_publisher_metadata(file_path: str, separator: str = ',') -> dict:
@@ -37,7 +23,31 @@ def read_publisher_metadata(file_path: str, separator: str = ',') -> dict:
         return metadata
     
 
+def extract_information(epub_content: str) -> ContentInformation:
+    
+    model = outlines.from_ollama(ollama.Client(), "gemma3:1b")
 
+    prompt = """
+    You're an expert in literature and literary analysis. Your task is to extract and summarize key information from the provided book content. Please provide the following details in a structured format:
+        genre (str): The main genre of the book (e.g., science fiction, crime, fantasy, romance)
+        themes (list[str]): A list of the main themes being featured in the book.
+        setting (dict[str, str]): A dictionary of the time and place that the story takes place in.
+        cultural_context (str): A brief description of the relevant cultural context invoked in the story.
+        narrative_tone (str): A brief description of the attitude or mood conveyed by the storytelling.
+        author_writing_style (str): A brief description of the writing style and techniques employed by the author.
+        characters_and_relationships (list[dict[str, str]]): A list of dictionaries outlining the central characters and their most important relationships using the fields name and relationship.
+    """
+
+    chat = outlines.inputs.Chat([
+        {"role": "user", "content": prompt},
+        {"role": "assistant", "content": "Sure what book content do you want me to analyze?"},
+        {"role": "user", "content": epub_content}
+    ])
+
+
+    response = model(chat, ContentInformation)
+    
+    return ContentInformation.model_validate_json(response)
 
 
 if __name__ == "__main__":
@@ -49,6 +59,9 @@ if __name__ == "__main__":
     epub_content = epub["content"]
 
     epub_id = FILE_NAME.split("/")[-1].replace(".epub", "")
+
+    content_information=extract_information(epub_content=epub_content)
+
     
     
     book_title= publisher_metadata.get(epub_id,{})["title"] or epub_metadata.get("dc:title", None) or "Unknown Title"
@@ -59,15 +72,12 @@ if __name__ == "__main__":
         author=book_author,
         publishing_year=publishing_year,
         epub_id=epub_id,
-        genre="Science Fiction",
-        themes=["Technology", "Future", "Society"],
-        setting={"time": "21st Century", "place": "Earth"},
-        cultural_context="A futuristic society grappling with advanced technology and its implications.",
-        narrative_tone="A mix of suspenseful and contemplative, exploring deep philosophical questions.",
-        author_writing_style="Descriptive and immersive, with a focus on world-building and character development.",
-        characters_and_relationships=[
-            {"name": "John Doe", "relationship": "Protagonist"},
-            {"name": "Jane Smith", "relationship": "Antagonist"}
-        ]
+        genre=content_information.genre ,
+        themes=content_information.themes,
+        setting=content_information.setting,
+        cultural_context=content_information.cultural_context,
+        narrative_tone=content_information.narrative_tone,
+        author_writing_style=content_information.author_writing_style ,
+        characters_and_relationships=content_information.characters_and_relationships
     )
     print(response.model_dump_json(indent=4))
