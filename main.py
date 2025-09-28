@@ -1,8 +1,8 @@
 import csv
 from tika import parser
 from nextory.model import BookMetadata, ContentInformation
-import ollama
 import outlines
+from google import genai
 
 
 def read_publisher_metadata(file_path: str, separator: str = ',') -> dict:
@@ -21,11 +21,15 @@ def read_publisher_metadata(file_path: str, separator: str = ',') -> dict:
                 "publishing_year": rows[3],
             }
         return metadata
-    
+
 
 def extract_information(epub_content: str) -> ContentInformation:
-    
-    model = outlines.from_ollama(ollama.Client(), "gemma3:1b")
+    client = genai.Client()
+    # Create the model
+    model = outlines.from_gemini(
+        client=client,
+        model_name="gemini-2.5-flash"
+    )
 
     prompt = """
     You're an expert in literature and literary analysis. Your task is to extract and summarize key information from the provided book content. Please provide the following details in a structured format:
@@ -38,22 +42,17 @@ def extract_information(epub_content: str) -> ContentInformation:
         characters_and_relationships (list[dict[str, str]]): A list of dictionaries outlining the central characters and their most important relationships using the fields name and relationship.
     """
 
-    chat = outlines.inputs.Chat([
-        {"role": "user", "content": prompt},
-        {"role": "assistant", "content": "Sure what book content do you want me to analyze?"},
-        {"role": "user", "content": epub_content}
-    ])
+    # Call it to generate text
+    result = model(prompt + epub_content, ContentInformation)
 
-
-    response = model(chat, ContentInformation)
+    client.close()
     
-    return ContentInformation.model_validate_json(response)
-
+    return ContentInformation.model_validate_json(result)
 
 if __name__ == "__main__":
     publisher_metadata = read_publisher_metadata(file_path="./dataset/metadata.csv", separator='\t')
 
-    FILE_NAME = "./dataset/pg74.epub"
+    FILE_NAME = "./dataset/pg1342.epub"
     epub = parser.from_file(filename=FILE_NAME)
     epub_metadata = epub["metadata"]
     epub_content = epub["content"]
