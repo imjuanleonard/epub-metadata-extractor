@@ -1,8 +1,38 @@
 import csv
 from tika import parser
-from nextory.model import BookMetadata, ContentInformation
 import outlines
 from google import genai
+from pydantic import BaseModel
+
+class CharacterAndRelationships(BaseModel):
+    name: str
+    relationship: str
+
+class ThemeSetting(BaseModel):
+    time: str
+    place: str
+
+class ContentInformation(BaseModel):
+    genre: str
+    themes: list[str]
+    setting: ThemeSetting
+    cultural_context: str
+    narrative_tone: str
+    author_writing_style: str
+    characters_and_relationships: list[CharacterAndRelationships]
+
+class BookMetadata(BaseModel):
+    title: str
+    author: str
+    publishing_year: int
+    epub_id: str
+    genre: str
+    themes: list[str]
+    setting: ThemeSetting
+    cultural_context: str
+    narrative_tone: str
+    author_writing_style: str
+    characters_and_relationships: list[CharacterAndRelationships]
 
 
 def read_publisher_metadata(file_path: str, separator: str = ',') -> dict:
@@ -52,7 +82,7 @@ def extract_information(epub_content: str) -> ContentInformation:
 if __name__ == "__main__":
     publisher_metadata = read_publisher_metadata(file_path="./dataset/metadata.csv", separator='\t')
 
-    FILE_NAME = "./dataset/pg1342.epub"
+    FILE_NAME = "./dataset/pg74.epub"
     epub = parser.from_file(filename=FILE_NAME)
     epub_metadata = epub["metadata"]
     epub_content = epub["content"]
@@ -63,9 +93,9 @@ if __name__ == "__main__":
 
     
     
-    book_title= publisher_metadata.get(epub_id,{})["title"] or epub_metadata.get("dc:title", None) or "Unknown Title"
-    book_author= publisher_metadata.get(epub_id,{})["author"] or epub_metadata.get("dc:creator", None) or "Unknown Author"
-    publishing_year= publisher_metadata.get(epub_id,{})["publishing_year"] or epub_metadata.get("dc:date", None) or 0
+    book_title= publisher_metadata.get(epub_id,{}).get("title", None) or epub_metadata.get("dc:title", None) or "Unknown Title"
+    book_author= publisher_metadata.get(epub_id,{}).get("author", None) or epub_metadata.get("dc:creator", None) or "Unknown Author"
+    publishing_year= publisher_metadata.get(epub_id,{}).get("publishing_year", None) or epub_metadata.get("dc:date", None) or 0
     response = BookMetadata(
         title=book_title,
         author=book_author,
