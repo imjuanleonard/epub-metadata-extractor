@@ -25,8 +25,16 @@ This project extracts rich metadata from EPUB files. It combines basic metadata 
 ├── dataset/              # Sample EPUB files and publisher metadata
 │   ├── metadata.csv
 │   └── pg1342.epub
-├── nextory/
-│   └── model.py          # Pydantic models for data structure
+├── src/
+│   ├── agent/            # AI model interactions
+│   │   └── librarian.py
+│   ├── models/           # Pydantic models for data structure
+│   │   └── book.py
+│   ├── task/             # Orchestration of the overall workflow
+│   │   └── process_book.py
+│   └── tool/             # Data processing utilities
+│       ├── csv_parser.py
+│       └── epub.py
 ├── .env                  # Environment variables (e.g., API keys)
 ├── main.py               # Main application script
 ├── pyproject.toml        # Project dependencies and metadata
@@ -35,11 +43,11 @@ This project extracts rich metadata from EPUB files. It combines basic metadata 
 
 ## How It Works
 
-1.  **Publisher Metadata**: The [`read_publisher_metadata`](main.py) function in [`main.py`](main.py) reads known book metadata from `dataset/metadata.csv`.
+1.  **Publisher Metadata**: The `read_publisher_metadata` function in `src/tool/csv_parser.py` reads known book metadata from `dataset/metadata.csv`.
 2.  **EPUB Parsing**: The script uses `tika` to parse the specified EPUB file, extracting its text content and any embedded metadata (like `dc:title`).
-3.  **AI Content Analysis**: The extracted text content is sent to the Gemini API via the [`extract_information`](main.py) function. A detailed prompt guides the model to perform a literary analysis.
-4.  **Structured Output**: The `outlines` library is used to constrain the AI's output, ensuring it returns a valid JSON object that matches the [`ContentInformation`](nextory/model.py) Pydantic model defined in [`nextory/model.py`](nextory/model.py).
-5.  **Data Consolidation**: The script intelligently merges the metadata from the publisher's CSV, the EPUB's internal metadata, and the AI-generated analysis into a final [`BookMetadata`](nextory/model.py) object.
+3.  **AI Content Analysis**: The extracted text content is sent to the Gemini API via the `LibrarianAgent`. A detailed prompt guides the model to perform a literary analysis.
+4.  **Structured Output**: The `outlines` library is used to constrain the AI's output, ensuring it returns a valid JSON object that matches the `ContentInformation` Pydantic model.
+5.  **Data Consolidation**: The `process_book` task intelligently merges the metadata from the publisher's CSV, the EPUB's internal metadata, and the AI-generated analysis into a final `BookMetadata` object.
 6.  **Output**: The final, consolidated metadata object is printed to the console as a formatted JSON string.
 
 ## Setup and Installation
@@ -58,19 +66,18 @@ This project extracts rich metadata from EPUB files. It combines basic metadata 
     ```
 
 2.  **Create a virtual environment and install dependencies:**
-    This project uses `uv` for package management.
+    This project uses `pip` for package management.
     ```sh
     python -m venv .venv
     source .venv/bin/activate
-    uv pip install -e .
+    pip install .
     ```
 
 3.  **Set up environment variables:**
     Create a `.env` file in the project root and add your Google Gemini API key.
-    ````
-    // filepath: .env
+    ```
     GEMINI_API_KEY="YOUR_API_KEY_HERE"
-    ````
+    ```
 
 ## Usage
 
@@ -80,7 +87,7 @@ To run the extractor, execute the main script:
 python main.py
 ```
 
-By default, the script processes the file `./dataset/pg1342.epub` and uses `./dataset/metadata.csv` for publisher information. You can modify the `FILE_NAME` variable in [`main.py`](main.py) to point to a different EPUB file.
+By default, the script processes the file `./dataset/pg74.epub` and uses `./dataset/metadata.csv` for publisher information. You can modify the file paths in `main.py` to point to a different EPUB file.
 
 ### Example Output
 
@@ -88,33 +95,37 @@ The script will print a JSON object to the standard output, similar to this:
 
 ```json
 {
-    "title": "Pride and Prejudice",
-    "author": "Jane Austen",
-    "publishing_year": 1813,
-    "epub_id": "pg1342",
-    "genre": "Romance",
+    "title": "The Adventures of Tom Sawyer",
+    "author": "Mark Twain",
+    "publishing_year": 1876,
+    "epub_id": "pg74",
+    "genre": "Adventure",
     "themes": [
-        "Love",
-        "Class",
-        "Pride",
-        "Prejudice",
-        "Family"
+        "Friendship",
+        "Morality",
+        "Childhood",
+        "Adventure",
+        "Social satire"
     ],
     "setting": {
-        "time": "Regency era England",
-        "place": "Rural England"
+        "time": "1840s",
+        "place": "The fictional town of St. Petersburg, Missouri"
     },
-    "cultural_context": "The novel is set within the context of the landed gentry in early 19th-century England, where social standing and wealth were paramount.",
-    "narrative_tone": "Ironic, witty, and satirical, with a focus on social commentary.",
-    "author_writing_style": "Characterized by free indirect discourse, irony, and detailed social observation.",
+    "cultural_context": "The novel is set in a small town on the Mississippi River before the Civil War, reflecting the social norms, superstitions, and dialects of the time.",
+    "narrative_tone": "Humorous, satirical, and nostalgic, with a third-person omniscient narrator.",
+    "author_writing_style": "Characterized by realism, vernacular language, and detailed descriptions of the setting.",
     "characters_and_relationships": [
         {
-            "name": "Elizabeth Bennet",
-            "relationship": "Protagonist, develops a complex relationship with Mr. Darcy."
+            "name": "Tom Sawyer",
+            "relationship": "The mischievous protagonist."
         },
         {
-            "name": "Mr. Darcy",
-            "relationship": "Initial antagonist, love interest of Elizabeth Bennet."
+            "name": "Huckleberry Finn",
+            "relationship": "Tom's best friend and fellow adventurer."
+        },
+        {
+            "name": "Becky Thatcher",
+            "relationship": "Tom's love interest."
         }
     ]
 }

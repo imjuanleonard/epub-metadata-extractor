@@ -1,6 +1,6 @@
 import outlines
 from google import genai
-from src.agent.librarian_model import ContentInformation
+from src.models.book import ContentInformation
 
 
 class LibrarianAgent():
