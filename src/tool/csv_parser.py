@@ -1,6 +1,7 @@
 import csv
 
-def read_publisher_metadata(file_path: str, separator: str = ',') -> dict:
+
+def read_publisher_metadata(file_path: str, separator: str = ",") -> dict:
     """
     Reads publisher metadata from a CSV file.
 
@@ -11,7 +12,7 @@ def read_publisher_metadata(file_path: str, separator: str = ',') -> dict:
     Returns:
         A dictionary containing the publisher metadata.
     """
-    with open(file_path, mode='r', encoding='utf-8') as file:
+    with open(file_path, mode="r", encoding="utf-8") as file:
         reader = csv.reader(file, delimiter=separator)
 
         # Skip header

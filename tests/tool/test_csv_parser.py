@@ -1,5 +1,5 @@
-import pytest
 from src.tool.csv_parser import read_publisher_metadata
+
 
 def test_read_publisher_metadata():
     """

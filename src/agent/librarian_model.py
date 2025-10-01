@@ -1,12 +1,15 @@
 from pydantic import BaseModel, Field
 
+
 class CharacterAndRelationships(BaseModel):
     name: str
     relationship: str
 
+
 class ThemeSetting(BaseModel):
     time: str
     place: str
+
 
 class ContentInformation(BaseModel):
     genre: str

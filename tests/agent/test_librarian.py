@@ -1,10 +1,10 @@
-import pytest
 from unittest.mock import patch, MagicMock
 from src.agent.librarian import LibrarianAgent
 from src.agent.librarian_model import ContentInformation
 
-@patch('src.agent.librarian.outlines.from_gemini')
-@patch('src.agent.librarian.genai.Client')
+
+@patch("src.agent.librarian.outlines.from_gemini")
+@patch("src.agent.librarian.genai.Client")
 def test_extract_information(mock_genai_client, mock_from_gemini):
     """
     Tests the extract_information method of the LibrarianAgent.

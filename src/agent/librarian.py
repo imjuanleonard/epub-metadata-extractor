@@ -3,19 +3,15 @@ from google import genai
 from src.agent.librarian_model import ContentInformation
 
 
-class LibrarianAgent():
+class LibrarianAgent:
     def __init__(self, model_name: str = "gemini-2.5-flash"):
         self.client = genai.Client()
-        self.model = outlines.from_gemini(
-            client=self.client,
-            model_name=model_name
-        )
-    
+        self.model = outlines.from_gemini(client=self.client, model_name=model_name)
+
     def close(self):
         self.client.close()
-    
-    def extract_information(self, epub_content: str) -> ContentInformation:
 
+    def extract_information(self, epub_content: str) -> ContentInformation:
         prompt = """
         You're an expert in literature and literary analysis. Your task is to extract and summarize key information from the provided book content. Please provide the following details in a structured format:
             genre (str): Give only 1 main genre of the book (e.g., science fiction, crime, fantasy, romance)

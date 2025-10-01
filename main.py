@@ -6,7 +6,7 @@ if __name__ == "__main__":
     EPUB_FILE_PATH = "./dataset/pg74.epub"
     METADATA_FILE_PATH = "./dataset/metadata.csv"
 
-    librarian_agent = LibrarianAgent(model_name = "gemini-2.5-flash")
+    librarian_agent = LibrarianAgent(model_name="gemini-2.5-flash")
     book_metadata = process_book(
         librarian_agent=librarian_agent,
         epub_file_path=EPUB_FILE_PATH,

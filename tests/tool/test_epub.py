@@ -1,8 +1,8 @@
-import pytest
 from unittest.mock import patch
 from src.tool.epub import extract_epub_data
 
-@patch('src.tool.epub.parser.from_file')
+
+@patch("src.tool.epub.parser.from_file")
 def test_extract_epub_data(mock_from_file):
     """
     Tests the extract_epub_data function with a mocked EPUB file.

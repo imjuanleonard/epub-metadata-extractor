@@ -4,7 +4,7 @@ from src.tool.csv_parser import read_publisher_metadata
 from src.tool.epub import extract_epub_data
 
 
-def process_book(librarian_agent: LibrarianAgent,epub_file_path: str, metadata_file_path: str) -> BookMetadata:
+def process_book(librarian_agent: LibrarianAgent, epub_file_path: str, metadata_file_path: str) -> BookMetadata:
     """
     Processes a book by extracting metadata, analyzing content, and combining the information.
 
@@ -15,7 +15,7 @@ def process_book(librarian_agent: LibrarianAgent,epub_file_path: str, metadata_f
     Returns:
         A BookMetadata object containing the combined book information.
     """
-    publisher_metadata = read_publisher_metadata(file_path=metadata_file_path, separator='\t')
+    publisher_metadata = read_publisher_metadata(file_path=metadata_file_path, separator="\t")
 
     epub_metadata, epub_content, epub_id = extract_epub_data(file_path=epub_file_path)
 
@@ -36,6 +36,6 @@ def process_book(librarian_agent: LibrarianAgent,epub_file_path: str, metadata_f
         cultural_context=content_information.cultural_context,
         narrative_tone=content_information.narrative_tone,
         author_writing_style=content_information.author_writing_style,
-        characters_and_relationships=content_information.characters_and_relationships
+        characters_and_relationships=content_information.characters_and_relationships,
     )
     return response
