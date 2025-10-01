@@ -1,10 +1,10 @@
-from src.agent.gemini import extract_information
-from src.models.book import BookMetadata
+from src.agent.librarian import LibrarianAgent
+from src.task.book_model import BookMetadata
 from src.tool.csv_parser import read_publisher_metadata
 from src.tool.epub import extract_epub_data
 
 
-def process_book(epub_file_path: str, metadata_file_path: str) -> BookMetadata:
+def process_book(librarian_agent: LibrarianAgent,epub_file_path: str, metadata_file_path: str) -> BookMetadata:
     """
     Processes a book by extracting metadata, analyzing content, and combining the information.
 
@@ -17,11 +17,9 @@ def process_book(epub_file_path: str, metadata_file_path: str) -> BookMetadata:
     """
     publisher_metadata = read_publisher_metadata(file_path=metadata_file_path, separator='\t')
 
-    epub_metadata, epub_content = extract_epub_data(file_path=epub_file_path)
+    epub_metadata, epub_content, epub_id = extract_epub_data(file_path=epub_file_path)
 
-    epub_id = epub_file_path.split("/")[-1].replace(".epub", "")
-
-    content_information = extract_information(epub_content=epub_content)
+    content_information = librarian_agent.extract_information(epub_content=epub_content)
 
     book_title = publisher_metadata.get(epub_id, {}).get("title") or epub_metadata.get("dc:title") or "Unknown Title"
     book_author = publisher_metadata.get(epub_id, {}).get("author") or epub_metadata.get("dc:creator") or "Unknown Author"
@@ -41,11 +39,3 @@ def process_book(epub_file_path: str, metadata_file_path: str) -> BookMetadata:
         characters_and_relationships=content_information.characters_and_relationships
     )
     return response
-
-
-if __name__ == "__main__":
-    book_metadata = process_book(
-        epub_file_path="./dataset/pg74.epub",
-        metadata_file_path="./dataset/metadata.csv"
-    )
-    print(book_metadata.model_dump_json(indent=4))
