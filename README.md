@@ -18,21 +18,6 @@ This project extracts rich metadata from EPUB files. It combines basic metadata 
 - Merges metadata from different sources into a single, comprehensive output.
 - Uses Apache Tika for robust EPUB content and metadata parsing.
 
-## Project Structure
-
-```
-.
-├── dataset/              # Sample EPUB files and publisher metadata
-│   ├── metadata.csv
-│   └── pg1342.epub
-├── nextory/
-│   └── model.py          # Pydantic models for data structure
-├── .env                  # Environment variables (e.g., API keys)
-├── main.py               # Main application script
-├── pyproject.toml        # Project dependencies and metadata
-└── README.md             # This file
-```
-
 ## How It Works
 
 1.  **Publisher Metadata**: The [`read_publisher_metadata`](main.py) function in [`main.py`](main.py) reads known book metadata from `dataset/metadata.csv`.
