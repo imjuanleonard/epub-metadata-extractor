@@ -1,6 +1,7 @@
 import outlines
 from google import genai
 from src.agent.librarian_model import ContentInformation
+from src.utils.logger import log_execution_time
 
 
 class LibrarianAgent():
@@ -14,6 +15,7 @@ class LibrarianAgent():
     def close(self):
         self.client.close()
     
+    @log_execution_time
     def extract_information(self, epub_content: str) -> ContentInformation:
 
         prompt = """

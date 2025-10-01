@@ -2,8 +2,10 @@ from src.agent.librarian import LibrarianAgent
 from src.agent.librarian_model import BookMetadata
 from src.tool.csv_parser import read_publisher_metadata
 from src.tool.epub import extract_epub_data
+from src.utils.logger import log_execution_time
 
 
+@log_execution_time
 def process_book(librarian_agent: LibrarianAgent,epub_file_path: str, metadata_file_path: str) -> BookMetadata:
     """
     Processes a book by extracting metadata, analyzing content, and combining the information.

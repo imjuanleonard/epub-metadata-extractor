@@ -1,5 +1,7 @@
 import csv
+from src.utils.logger import log_execution_time
 
+@log_execution_time
 def read_publisher_metadata(file_path: str, separator: str = ',') -> dict:
     """
     Reads publisher metadata from a CSV file.
