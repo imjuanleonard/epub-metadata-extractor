@@ -1,7 +1,7 @@
 import logging
 from src.agent.librarian import LibrarianAgent
 from src.task.process_book import process_book
-
+from src.utils.logger import log_execution_time
 
 # Configure logging
 logging.basicConfig(
@@ -9,6 +9,7 @@ logging.basicConfig(
 )
 
 
+@log_execution_time
 def main():
     """Initializes the agent, processes the book, and prints the metadata."""
     # These paths can be configured or passed as arguments
