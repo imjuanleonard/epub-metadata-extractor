@@ -16,3 +16,17 @@ class ContentInformation(BaseModel):
     narrative_tone: str
     author_writing_style: str
     characters_and_relationships: list[CharacterAndRelationships]
+
+
+class BookMetadata(BaseModel):
+    title: str
+    author: str
+    publishing_year: int
+    epub_id: str
+    genre: str
+    themes: list[str]
+    setting: ThemeSetting
+    cultural_context: str
+    narrative_tone: str
+    author_writing_style: str
+    characters_and_relationships: list[CharacterAndRelationships]

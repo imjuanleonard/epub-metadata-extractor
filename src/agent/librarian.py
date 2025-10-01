@@ -1,6 +1,6 @@
 import outlines
 from google import genai
-from src.agent.model import ContentInformation
+from src.agent.librarian_model import ContentInformation
 
 
 class LibrarianAgent():
@@ -11,12 +11,8 @@ class LibrarianAgent():
             model_name=model_name
         )
     
-    def __enter__(self):
-        return self.client
-    
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def close(self):
         self.client.close()
-        print("Client closed")
     
     def extract_information(self, epub_content: str) -> ContentInformation:
 

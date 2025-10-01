@@ -1,5 +1,5 @@
 from src.agent.librarian import LibrarianAgent
-from src.task.book_model import BookMetadata
+from src.agent.librarian_model import BookMetadata
 from src.tool.csv_parser import read_publisher_metadata
 from src.tool.epub import extract_epub_data
 
