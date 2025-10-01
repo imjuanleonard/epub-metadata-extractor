@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+      - uses: actions/checkout@v5
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          # Caching is enabled by default on GitHub-hosted runners.
+          # You can explicitly set it to true if you're not on a GitHub-hosted runner.
+          enable-cache: true
+          # The cache key will be invalidated if pyproject.toml or uv.lock changes.
+          cache-dependency-glob: "**/pyproject.toml,**/uv.lock"
+            
+      - name: Install Python dependencies
+        run: |
+          uv sync --dev
+      
+      - name: Run linting with Ruff
+        run: |
+          uv run ruff check .
+
+      - name: Run tests with Pytest
+        run: |
+          uv run pytest --cov
