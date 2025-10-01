@@ -1,6 +1,8 @@
 from tika import parser
+from src.utils.logger import log_execution_time
 
 
+@log_execution_time
 def extract_epub_data(file_path: str) -> tuple[dict, str, str]:
     """
     Extracts metadata and content from an EPUB file.

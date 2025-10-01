@@ -1,8 +1,10 @@
 import outlines
 from google import genai
 from src.agent.librarian_model import ContentInformation
+from src.utils.logger import log_execution_time
 
 
+@log_execution_time
 class LibrarianAgent:
     def __init__(self, model_name: str = "gemini-2.5-flash"):
         self.client = genai.Client()

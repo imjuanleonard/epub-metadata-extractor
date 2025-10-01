@@ -1,5 +1,12 @@
+import logging
 from src.agent.librarian import LibrarianAgent
 from src.task.process_book import process_book
+
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", handlers=[logging.StreamHandler()]
+)
 
 
 def main():
