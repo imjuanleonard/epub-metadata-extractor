@@ -1,6 +1,5 @@
 import json
 from unittest.mock import MagicMock, patch
-
 from main import main
 
 
@@ -48,4 +47,9 @@ def test_main_script_execution(mock_librarian_agent_class, mock_process_book, ca
     # Verify the output was printed correctly
     captured = capsys.readouterr()
     expected_json_output = json.dumps(expected_dict, indent=4)
-    assert captured.out.strip() == expected_json_output
+    # Define ANSI color codes to match main.py
+    GREEN = "\033[92m"
+    ENDC = "\033[0m"
+    expected_colored_output = f"{GREEN}{expected_json_output}{ENDC}"
+
+    assert captured.out.strip() == expected_colored_output

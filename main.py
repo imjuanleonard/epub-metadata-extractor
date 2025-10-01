@@ -22,7 +22,10 @@ def main():
             epub_file_path=EPUB_FILE_PATH,
             metadata_file_path=METADATA_FILE_PATH,
         )
-        print(book_metadata.model_dump_json(indent=4))
+        GREEN = "\033[92m"
+        ENDC = "\033[0m"
+
+        print(GREEN + book_metadata.model_dump_json(indent=4) + ENDC)
     finally:
         librarian_agent.client.close()
 
