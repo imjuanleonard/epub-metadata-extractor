@@ -44,11 +44,8 @@ class LibrarianAgent:
         """
 
         result = self.model(
-            model_input=prompt + epub_content,
+            model_input=prompt + "Lord of the Rings" + epub_content,
             output_type=ContentInformation,
-            temperature=self.temperature,
-            max_output_tokens=self.max_output_tokens,
-            top_p=self.top_p,
         )
 
         return ContentInformation.model_validate_json(result)
