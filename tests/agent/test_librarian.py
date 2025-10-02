@@ -48,10 +48,13 @@ def test_extract_information(mock_genai_client, mock_from_gemini):
 
     # Verify that the model was called with the correct prompt
     mock_model.assert_called_once()
-    call_args, _ = mock_model.call_args
-    assert "You're an expert in literature" in call_args[0]
-    assert epub_content in call_args[0]
-    assert call_args[1] == ContentInformation
+    _, kwargs = mock_model.call_args
+    assert "You're an expert in literature" in kwargs["model_input"]
+    assert epub_content in kwargs["model_input"]
+    assert kwargs["output_type"] == ContentInformation
+    assert kwargs["temperature"] == 0.2
+    assert kwargs["max_output_tokens"] == 200
+    assert kwargs["top_p"] == 0.95
 
     agent.close()
     mock_genai_client.return_value.close.assert_called_once()

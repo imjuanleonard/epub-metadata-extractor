@@ -6,8 +6,26 @@ from src.utils.logger import log_execution_time
 
 @log_execution_time
 class LibrarianAgent:
-    def __init__(self, model_name: str = "gemini-2.5-flash"):
+    def __init__(
+        self,
+        model_name: str = "gemini-2.5-flash",
+        temperature: float = 0.2,
+        max_output_tokens: int = 200,
+        top_p: float = 0.95,
+    ):
+        """
+        Initializes the LibrarianAgent.
+
+        Args:
+            model_name: The name of the Gemini model to use.
+            temperature: The sampling temperature to use control creativity, lower more consistent range 0 - 1.
+            max_output_tokens: The maximum number of tokens to generate.
+            top_p: The nucleus sampling probability control diversity, higher better range 0 - 1.
+        """
         self.client = genai.Client()
+        self.temperature = temperature
+        self.max_output_tokens = max_output_tokens
+        self.top_p = top_p
         self.model = outlines.from_gemini(client=self.client, model_name=model_name)
 
     def close(self):
@@ -25,7 +43,12 @@ class LibrarianAgent:
             characters_and_relationships (list[dict[str, str]]): A list of dictionaries outlining the central characters and their most important relationships using the fields name and relationship.
         """
 
-        # Call it to generate text
-        result = self.model(prompt + epub_content, ContentInformation)
+        result = self.model(
+            model_input=prompt + epub_content,
+            output_type=ContentInformation,
+            temperature=self.temperature,
+            max_output_tokens=self.max_output_tokens,
+            top_p=self.top_p,
+        )
 
         return ContentInformation.model_validate_json(result)
